@@ -662,23 +662,22 @@ function populateUsersDatalist() {
                 `).join('');
             }
         }
-
-        function handleSaveMission(e) {
+function handleSaveMission(e) {
     e.preventDefault();
     
     const nouvelleLigneMission = [
         'MIS-' + Date.now(),
-        document.getElementById('collaboratorInput').value.trim(),
-        document.getElementById('interventionType').value,
-        parseInt(document.getElementById('prioritySelect').value),
-        document.getElementById('missionTypeSelect').value,
-        document.getElementById('missionDetailSelect').value,
-        document.getElementById('missionNotes').value.trim(),
+        String(document.getElementById('collaboratorInput').value || '').trim(),
+        String(document.getElementById('interventionType').value || ''),
+        String(document.getElementById('prioritySelect').value || '2'),
+        String(document.getElementById('missionTypeSelect').value || ''),
+        String(document.getElementById('missionDetailSelect').value || ''),
+        String(document.getElementById('missionNotes').value || '').trim(),
         'En cours',
         new Date().toISOString()
     ];
 
-    // Envoi vers l'onglet "Missions" de Google Sheets
+    // Envoi vers l'onglet "Missions"
     envoyerDonneeVersGoogleSheet('Missions', nouvelleLigneMission, function() {
         closeMissionModal();
         document.getElementById('missionForm').reset();
