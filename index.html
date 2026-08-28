@@ -388,7 +388,7 @@
 
         let dbEquipements = [];
         let dbUsers = [];
-        let gsiMissions = JSON.parse(localStorage.getItem('gsi_missions')) || [];
+       let gsiMissions = [];
 
         const MISSION_TYPES = {
             support: { label: "Support/Assistance", details: ["Helpdesk", "Assistance", "Dépannage"] },
@@ -403,21 +403,24 @@
 
         // --- GOOGLE SHEETS JSONP HANDLERS (Compatibilité GitHub CORS) ---
         function chargerDonneesDepuisGoogleSheet() {
-            const callbackName = 'cb_load_' + Date.now();
-            window[callbackName] = function(data) {
-                if (data.equipements) dbEquipements = data.equipements;
-                if (data.users) dbUsers = data.users;
-                renderEquipements();
-                renderUsers();
-populateUsersDatalist(); // <--- AJOUTER CETTE LIGNE
-                updateStats();
-                delete window[callbackName];
-            };
+    const callbackName = 'cb_load_' + Date.now();
+    window[callbackName] = function(data) {
+        if (data.equipements) dbEquipements = data.equipements;
+        if (data.users) dbUsers = data.users;
+        if (data.missions) gsiMissions = data.missions; // <--- Récupération des missions depuis Google Sheets
+        
+        renderEquipements();
+        renderUsers();
+        populateUsersDatalist();
+        renderMissions(); // <--- Rendu des missions à jour
+        updateStats();
+        delete window[callbackName];
+    };
 
-            const script = document.createElement('script');
-            script.src = `${API_URL}?action=getAll&callback=${callbackName}`;
-            document.body.appendChild(script);
-        }
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=getAll&callback=${callbackName}`;
+    document.body.appendChild(script);
+}
 
         function envoyerDonneeVersGoogleSheet(targetSheet, arrayRow, onCompleteCallback) {
             const callbackName = 'cb_write_' + Date.now();
@@ -661,27 +664,27 @@ function populateUsersDatalist() {
         }
 
         function handleSaveMission(e) {
-            e.preventDefault();
-            const newMission = {
-                id: 'MIS-' + Date.now(),
-                collaborator: document.getElementById('collaboratorInput').value.trim(),
-                interventionType: document.getElementById('interventionType').value,
-                priority: parseInt(document.getElementById('prioritySelect').value),
-                type: document.getElementById('missionTypeSelect').value,
-                detail: document.getElementById('missionDetailSelect').value,
-                notes: document.getElementById('missionNotes').value.trim(),
-                status: 'En cours',
-                createdAt: new Date().toISOString()
-            };
+    e.preventDefault();
+    
+    const nouvelleLigneMission = [
+        'MIS-' + Date.now(),
+        document.getElementById('collaboratorInput').value.trim(),
+        document.getElementById('interventionType').value,
+        parseInt(document.getElementById('prioritySelect').value),
+        document.getElementById('missionTypeSelect').value,
+        document.getElementById('missionDetailSelect').value,
+        document.getElementById('missionNotes').value.trim(),
+        'En cours',
+        new Date().toISOString()
+    ];
 
-            gsiMissions.push(newMission);
-            localStorage.setItem('gsi_missions', JSON.stringify(gsiMissions));
-            
-            renderMissions();
-            closeMissionModal();
-            document.getElementById('missionForm').reset();
-            document.getElementById('missionDetailSelect').disabled = true;
-        }
+    // Envoi vers l'onglet "Missions" de Google Sheets
+    envoyerDonneeVersGoogleSheet('Missions', nouvelleLigneMission, function() {
+        closeMissionModal();
+        document.getElementById('missionForm').reset();
+        document.getElementById('missionDetailSelect').disabled = true;
+    });
+}
 
         function completeMission(id) {
             const mission = gsiMissions.find(m => m.id === id);
@@ -731,6 +734,15 @@ function populateUsersDatalist() {
             renderMissions();
             chargerDonneesDepuisGoogleSheet();
         });
+
+// --- INITIALISATION AUTOMATIQUE ---
+        window.addEventListener('DOMContentLoaded', function() {
+            renderMissions();
+            chargerDonneesDepuisGoogleSheet();
+        });
+
+
+        
     </script>
 </body>
 </html>
