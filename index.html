@@ -502,11 +502,23 @@ function populateUsersDatalist() {
     datalist.innerHTML = '';
     
     dbUsers.forEach(u => {
+        // Extraction des valeurs selon que u est un Tableau ou un Objet
+        const nom = u.nom || u[1] || '';
+        const prenom = u.prenom || u[2] || '';
+        const email = u.email || u[3] || '';
+
+        const fullName = `${nom} ${prenom}`.trim();
+        
+        // Si aucune donnée n'est disponible, on passe l'élément
+        if (!email && !fullName) return;
+
         const option = document.createElement('option');
-        // Affiche l'email et le nom complet pour une sélection facile
-        const fullName = `${u.nom || ''} ${u.prenom || ''}`.trim();
-        option.value = u.email || fullName; // Valeur insérée dans le champ
-        option.label = `${fullName} (${u.email || 'Sans email'})`; // Libellé d'aide dans la liste
+        // La valeur insérée automatiquement dans le champ d'entrée
+        option.value = email || fullName; 
+        
+        // Le libellé d'aide affiché dans la liste déroulante
+        option.label = `${fullName}${email ? ' (' + email + ')' : ''}`;
+        
         datalist.appendChild(option);
     });
 }
