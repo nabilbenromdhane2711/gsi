@@ -42,171 +42,169 @@
         </div>
     </header>
 
-    <!-- Main Workspace (2 Compartiments) -->
-    <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Main Workspace -->
+    <main class="flex-1 p-6 space-y-6">
 
-        <!-- Vos sections existantes (ex: Parc matériel) -->
-    <section id="assets-section" class="tab-content">
-      <!-- ... Code existant du matériel ... -->
-    </section>
+        <!-- MODULE MISSIONS (Rendu visible avec 'active') -->
+        <section id="missions-section" class="tab-content active p-6 bg-white rounded-xl shadow-sm border border-gray-200">
+          
+          <!-- En-tête -->
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">📋 Suivi des Missions & Interventions</h1>
+            <button onclick="openNewMissionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow font-medium cursor-pointer">
+              + Nouvelle Mission
+            </button>
+          </div>
 
-    <!-- ========================================================= -->
-    <!-- EMPLACEMENT DU NOUVEAU CODE : MODULE MISSIONS -->
-    <!-- ========================================================= -->
-    <section id="missions-section" class="tab-content p-6 bg-gray-50 min-h-screen">
-      
-      <!-- En-tête -->
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">📋 Suivi des Missions & Interventions</h1>
-        <button onclick="openNewMissionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow font-medium">
-          + Nouvelle Mission
-        </button>
-      </div>
-
-      <!-- Top 5 Priorités -->
-      <div class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
-          🔥 Top 5 Priorités
-        </h2>
-        <div id="topMissionsGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <!-- Les cartes s'afficheront ici via JS -->
-        </div>
-      </div>
-
-      <!-- Tableau des missions -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-gray-700">Missions en cours</h2>
-          <input type="text" id="searchMission" onkeyup="filterMissions()" placeholder="Filtrer par collaborateur..." class="border rounded-md px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-600">
-            <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-                <th class="p-3">Collaborateur</th>
-                <th class="p-3">Type</th>
-                <th class="p-3">Détail</th>
-                <th class="p-3">Priorité</th>
-                <th class="p-3">Mode</th>
-                <th class="p-3">Statut</th>
-                <th class="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="missionsTableBody">
-              <!-- Les lignes du tableau s'afficheront ici via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-
-        <!-- COMPOSANT 1 : ÉQUIPEMENTS -->
-        <section class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-            <div class="bg-slate-50 border-b border-gray-200 p-4 flex justify-between items-center flex-wrap gap-2">
-                <div class="flex items-center space-x-2">
-                    <span class="text-xl">🖥️</span>
-                    <h2 class="text-lg font-bold text-slate-700">Compartiment Équipements</h2>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openModal('modalImportEq')" class="bg-slate-600 hover:bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-md transition cursor-pointer">
-                        📥 Import Massif
-                    </button>
-                    <button onclick="openFormEquipement()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2.5 py-1.5 rounded-md shadow transition cursor-pointer">
-                        + Ajouter
-                    </button>
-                </div>
+          <!-- Top 5 Priorités -->
+          <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              🔥 Top 5 Priorités
+            </h2>
+            <div id="topMissionsGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <!-- Les cartes s'afficheront ici via JS -->
             </div>
-            
-            <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-                <input type="text" id="searchEquipement" oninput="renderEquipements()" placeholder="🔍 Rechercher par N° Série, Inventaire, Type, Modèle..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-            </div>
+          </div>
 
-            <div class="flex-1 overflow-y-auto max-h-[300px] border-b border-gray-200">
-                <table class="w-full text-left border-collapse text-sm">
-                    <thead>
-                        <tr class="bg-slate-100 text-slate-600 uppercase text-[11px] tracking-wider sticky top-0 border-b border-gray-200">
-                            <th class="p-3">Type / Désignation</th>
-                            <th class="p-3">Marque & Modèle</th>
-                            <th class="p-3">N° Série / Inv</th>
-                            <th class="p-3">Statut / User</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listEquipements" class="divide-y divide-gray-100"></tbody>
-                </table>
+          <!-- Tableau des missions -->
+          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
+              <h2 class="text-lg font-semibold text-gray-700">Missions en cours</h2>
+              <input type="text" id="searchMission" onkeyup="filterMissions()" placeholder="Filtrer par collaborateur..." class="border rounded-md px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-gray-600">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                  <tr>
+                    <th class="p-3">Collaborateur</th>
+                    <th class="p-3">Type</th>
+                    <th class="p-3">Détail</th>
+                    <th class="p-3">Priorité</th>
+                    <th class="p-3">Mode</th>
+                    <th class="p-3">Statut</th>
+                    <th class="p-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="missionsTableBody">
+                  <!-- Les lignes du tableau s'afficheront ici via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-            <!-- Detail Equipment -->
-            <div id="detailEquipementSection" class="p-5 bg-slate-50/80 flex-1 hidden flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <span id="detailEqBadge" class="inline-block bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-semibold mb-1">PC Portable</span>
-                        <h3 id="detailEqTitle" class="text-lg font-bold text-slate-800">Désignation Équipement</h3>
-                        <p id="detailEqSub" class="text-xs text-gray-500">Marque Modèle - S/N</p>
-                    </div>
-                </div>
-                <div class="text-sm bg-white p-3 rounded border border-gray-200">
-                    <div class="grid grid-cols-2 gap-y-2 text-xs">
-                        <div><span class="text-gray-500">N° Inventaire:</span> <strong id="detEqInv" class="text-slate-700">-</strong></div>
-                        <div><span class="text-gray-500">N° Série:</span> <strong id="detEqSn" class="text-slate-700">-</strong></div>
-                        <div><span class="text-gray-500">Marque:</span> <strong id="detEqMarque" class="text-slate-700">-</strong></div>
-                        <div><span class="text-gray-500">Modèle:</span> <strong id="detEqModel" class="text-slate-700">-</strong></div>
-                        <div><span class="text-gray-500">Site:</span> <strong id="detEqSite" class="text-slate-700">-</strong></div>
-                        <div><span class="text-gray-500">NOM AD:</span> <strong id="detEqNomAd" class="text-slate-700">-</strong></div>
-                    </div>
-                </div>
-            </div>
-            <div id="noEqSelected" class="p-8 text-center text-gray-400 text-sm my-auto">
-                💡 Sélectionnez un équipement dans la liste pour voir ses détails.
-            </div>
         </section>
 
-        <!-- COMPOSANT 2 : UTILISATEURS -->
-        <section class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-            <div class="bg-slate-50 border-b border-gray-200 p-4 flex justify-between items-center flex-wrap gap-2">
-                <div class="flex items-center space-x-2">
-                    <span class="text-xl">👤</span>
-                    <h2 class="text-lg font-bold text-slate-700">Compartiment Utilisateurs</h2>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openFormUser()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2.5 py-1.5 rounded-md shadow transition cursor-pointer">
-                        + Ajouter
-                    </button>
-                </div>
-            </div>
+        <!-- COMPOSANTS EXISTANTS : ÉQUIPEMENTS & UTILISATEURS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-                <input type="text" id="searchUser" oninput="renderUsers()" placeholder="🔍 Rechercher par Nom, Prénom, Matricule..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-            </div>
-
-            <div class="flex-1 overflow-y-auto max-h-[300px] border-b border-gray-200">
-                <table class="w-full text-left border-collapse text-sm">
-                    <thead>
-                        <tr class="bg-slate-100 text-slate-600 uppercase text-[11px] tracking-wider sticky top-0 border-b border-gray-200">
-                            <th class="p-3">Matricule / Grade</th>
-                            <th class="p-3">Nom Prénom</th>
-                            <th class="p-3">Email</th>
-                            <th class="p-3">Site</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listUsers" class="divide-y divide-gray-100"></tbody>
-                </table>
-            </div>
-
-            <!-- Detail User -->
-            <div id="detailUserSection" class="p-5 bg-slate-50/80 flex-1 hidden flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <span id="detailUsrBadge" class="inline-block bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full font-semibold mb-1">ID: USR-001</span>
-                        <h3 id="detailUsrTitle" class="text-lg font-bold text-slate-800">Nom Prénom</h3>
-                        <p id="detailUsrSub" class="text-xs text-gray-500">Grade - Site</p>
+            <!-- COMPOSANT 1 : ÉQUIPEMENTS -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                <div class="bg-slate-50 border-b border-gray-200 p-4 flex justify-between items-center flex-wrap gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">🖥️</span>
+                        <h2 class="text-lg font-bold text-slate-700">Compartiment Équipements</h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openModal('modalImportEq')" class="bg-slate-600 hover:bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-md transition cursor-pointer">
+                            📥 Import Massif
+                        </button>
+                        <button onclick="openFormEquipement()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2.5 py-1.5 rounded-md shadow transition cursor-pointer">
+                            + Ajouter
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div id="noUsrSelected" class="p-8 text-center text-gray-400 text-sm my-auto">
-                💡 Sélectionnez un utilisateur dans la liste.
-            </div>
-        </section>
+                
+                <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+                    <input type="text" id="searchEquipement" oninput="renderEquipements()" placeholder="🔍 Rechercher par N° Série, Inventaire, Type, Modèle..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                </div>
+
+                <div class="flex-1 overflow-y-auto max-h-[300px] border-b border-gray-200">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 uppercase text-[11px] tracking-wider sticky top-0 border-b border-gray-200">
+                                <th class="p-3">Type / Désignation</th>
+                                <th class="p-3">Marque & Modèle</th>
+                                <th class="p-3">N° Série / Inv</th>
+                                <th class="p-3">Statut / User</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listEquipements" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+
+                <!-- Detail Equipment -->
+                <div id="detailEquipementSection" class="p-5 bg-slate-50/80 flex-1 hidden flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span id="detailEqBadge" class="inline-block bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-semibold mb-1">PC Portable</span>
+                            <h3 id="detailEqTitle" class="text-lg font-bold text-slate-800">Désignation Équipement</h3>
+                            <p id="detailEqSub" class="text-xs text-gray-500">Marque Modèle - S/N</p>
+                        </div>
+                    </div>
+                    <div class="text-sm bg-white p-3 rounded border border-gray-200">
+                        <div class="grid grid-cols-2 gap-y-2 text-xs">
+                            <div><span class="text-gray-500">N° Inventaire:</span> <strong id="detEqInv" class="text-slate-700">-</strong></div>
+                            <div><span class="text-gray-500">N° Série:</span> <strong id="detEqSn" class="text-slate-700">-</strong></div>
+                            <div><span class="text-gray-500">Marque:</span> <strong id="detEqMarque" class="text-slate-700">-</strong></div>
+                            <div><span class="text-gray-500">Modèle:</span> <strong id="detEqModel" class="text-slate-700">-</strong></div>
+                            <div><span class="text-gray-500">Site:</span> <strong id="detEqSite" class="text-slate-700">-</strong></div>
+                            <div><span class="text-gray-500">NOM AD:</span> <strong id="detEqNomAd" class="text-slate-700">-</strong></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="noEqSelected" class="p-8 text-center text-gray-400 text-sm my-auto">
+                    💡 Sélectionnez un équipement dans la liste pour voir ses détails.
+                </div>
+            </section>
+
+            <!-- COMPOSANT 2 : UTILISATEURS -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                <div class="bg-slate-50 border-b border-gray-200 p-4 flex justify-between items-center flex-wrap gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">👤</span>
+                        <h2 class="text-lg font-bold text-slate-700">Compartiment Utilisateurs</h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openFormUser()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2.5 py-1.5 rounded-md shadow transition cursor-pointer">
+                            + Ajouter
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+                    <input type="text" id="searchUser" oninput="renderUsers()" placeholder="🔍 Rechercher par Nom, Prénom, Matricule..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                </div>
+
+                <div class="flex-1 overflow-y-auto max-h-[300px] border-b border-gray-200">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 uppercase text-[11px] tracking-wider sticky top-0 border-b border-gray-200">
+                                <th class="p-3">Matricule / Grade</th>
+                                <th class="p-3">Nom Prénom</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Site</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listUsers" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+
+                <!-- Detail User -->
+                <div id="detailUserSection" class="p-5 bg-slate-50/80 flex-1 hidden flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span id="detailUsrBadge" class="inline-block bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full font-semibold mb-1">ID: USR-001</span>
+                            <h3 id="detailUsrTitle" class="text-lg font-bold text-slate-800">Nom Prénom</h3>
+                            <p id="detailUsrSub" class="text-xs text-gray-500">Grade - Site</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="noUsrSelected" class="p-8 text-center text-gray-400 text-sm my-auto">
+                    💡 Sélectionnez un utilisateur dans la liste.
+                </div>
+            </section>
+
+        </div>
 
     </main>
 
@@ -218,6 +216,70 @@
             <div>Utilisateurs : <span id="statUsrCount" class="font-bold text-slate-700">0</span></div>
         </div>
     </footer>
+
+    <!-- MODAL : FORMULAIRE MISSION -->
+    <div id="missionModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full flex flex-col overflow-hidden">
+            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold">Créer une nouvelle mission</h3>
+                <button onclick="closeMissionModal()" class="text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <form id="missionForm" onsubmit="handleSaveMission(event)" class="p-5 space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Collaborateur / Demandeur *</label>
+                    <input type="text" id="collaboratorInput" required placeholder="Nom du collaborateur" class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Mode d'intervention</label>
+                        <select id="interventionType" class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                            <option value="remote">À distance</option>
+                            <option value="onsite">Sur site</option>
+                            <option value="external">Prestataire</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Priorité</label>
+                        <select id="prioritySelect" class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                            <option value="1">P1 - Urgent</option>
+                            <option value="2" selected>P2 - Normal</option>
+                            <option value="3">P3 - Basse</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Type de mission *</label>
+                        <select id="missionTypeSelect" required onchange="updateMissionDetails()" class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                            <option value="">Sélectionner</option>
+                            <option value="support">Support/Assistance</option>
+                            <option value="maintenance">Maintenance Matérielle</option>
+                            <option value="network">Réseau & Config</option>
+                            <option value="software">Logiciels</option>
+                            <option value="security">Sécurité</option>
+                            <option value="microsoft">Applications</option>
+                            <option value="printing">Impression</option>
+                            <option value="equipment">Équipements</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Détail *</label>
+                        <select id="missionDetailSelect" required disabled class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                            <option value="">Sélectionner un détail</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Notes / Description</label>
+                    <textarea id="missionNotes" rows="3" placeholder="Informations complémentaires..." class="w-full px-3 py-2 border border-gray-300 rounded bg-white"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                    <button type="button" onclick="closeMissionModal()" class="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded cursor-pointer">Annuler</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow cursor-pointer">Enregistrer la mission</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- MODAL : FORMULAIRE EQUIPEMENT -->
     <div id="modalEquipementForm" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4 hidden">
@@ -374,7 +436,7 @@
             document.body.appendChild(script);
         }
 
-        // 3. FONCTION DE SAUVEGARDE DE L'ÉQUIPEMENT (Appelée par le formulaire Équipement)
+        // 3. FONCTION DE SAUVEGARDE DE L'ÉQUIPEMENT
         function saveEquipementAction(event) {
             if (event) event.preventDefault();
 
@@ -399,7 +461,7 @@
             });
         }
 
-        // 4. FONCTION DE SAUVEGARDE DE L'UTILISATEUR (Appelée par le formulaire User)
+        // 4. FONCTION DE SAUVEGARDE DE L'UTILISATEUR
         function saveUserAction(event) {
             if (event) event.preventDefault();
 
@@ -511,14 +573,9 @@
             chargerDonneesDepuisGoogleSheet();
         };
     </script>
-    <div id="missionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <!-- Code du formulaire modal donné précédemment -->
-  </div>
-    <!-- ========================================================= -->
-    <!-- SCRIPT DU MODULE MISSIONS -->
-    <!-- ========================================================= -->
+
+    <!-- SCRIPT MODULE MISSIONS -->
     <script>
-        // 1. Données des types et détails de missions
         const MISSION_TYPES = {
             support: { label: "Support/Assistance", details: ["Helpdesk", "Assistance", "Dépannage"] },
             maintenance: { label: "Maintenance Matérielle", details: ["Disque dur", "RAM", "Maintenance Externe"] },
@@ -530,15 +587,12 @@
             equipment: { label: "Équipements", details: ["Fourniture", "Entrée/Sortie", "Installation"] }
         };
 
-        // 2. Chargement des missions sauvegardées (ou tableau vide au départ)
         let gsiMissions = JSON.parse(localStorage.getItem('gsi_missions')) || [];
 
-        // 3. Exécution au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
             renderMissions();
         });
 
-        // 4. Fonctions pour ouvrir et fermer la fenêtre modale
         function openNewMissionModal() {
             document.getElementById('missionModal').classList.remove('hidden');
         }
@@ -547,7 +601,6 @@
             document.getElementById('missionModal').classList.add('hidden');
         }
 
-        // 5. Mettre à jour la liste des détails selon le type choisi
         function updateMissionDetails() {
             const typeKey = document.getElementById('missionTypeSelect').value;
             const detailSelect = document.getElementById('missionDetailSelect');
@@ -569,20 +622,15 @@
             detailSelect.disabled = false;
         }
 
-        // 6. Afficher les cartes Top 5 et le tableau
         function renderMissions() {
             const topGrid = document.getElementById('topMissionsGrid');
             const tableBody = document.getElementById('missionsTableBody');
             
-            // Filtrer seulement les missions non terminées
             const activeMissions = gsiMissions.filter(m => m.status !== 'Terminée');
-            
-            // Trier par priorité (P1 d'abord) puis par date (plus récents)
             activeMissions.sort((a, b) => a.priority - b.priority || new Date(b.createdAt) - new Date(a.createdAt));
 
             const top5 = activeMissions.slice(0, 5);
 
-            // Rendu des 5 cartes du haut
             if (top5.length === 0) {
                 topGrid.innerHTML = '<p class="text-sm text-gray-500 col-span-5 text-center py-4">Aucune mission en cours.</p>';
             } else {
@@ -597,14 +645,13 @@
                             <div class="text-xs text-gray-500 italic mt-0.5">${m.detail}</div>
                             <p class="text-xs text-gray-600 mt-2 line-clamp-2">${m.notes || ''}</p>
                         </div>
-                        <button onclick="completeMission('${m.id}')" class="w-full mt-2 bg-green-50 hover:bg-green-100 text-green-700 text-xs py-1 rounded font-medium border border-green-200">
+                        <button onclick="completeMission('${m.id}')" class="w-full mt-2 bg-green-50 hover:bg-green-100 text-green-700 text-xs py-1 rounded font-medium border border-green-200 cursor-pointer">
                             ✓ Terminer
                         </button>
                     </div>
                 `).join('');
             }
 
-            // Rendu du tableau complet
             if (activeMissions.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500 text-sm">Aucune mission enregistrée.</td></tr>';
             } else {
@@ -617,14 +664,13 @@
                         <td class="p-3 text-xs uppercase">${m.interventionType}</td>
                         <td class="p-3"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-medium">${m.status}</span></td>
                         <td class="p-3 text-right">
-                            <button onclick="completeMission('${m.id}')" class="text-green-600 hover:text-green-800 font-medium text-xs">Clôturer</button>
+                            <button onclick="completeMission('${m.id}')" class="text-green-600 hover:text-green-800 font-medium text-xs cursor-pointer">Clôturer</button>
                         </td>
                     </tr>
                 `).join('');
             }
         }
 
-        // 7. Enregistrer une nouvelle mission
         function handleSaveMission(e) {
             e.preventDefault();
             
@@ -649,7 +695,6 @@
             document.getElementById('missionDetailSelect').disabled = true;
         }
 
-        // 8. Clôturer une mission
         function completeMission(id) {
             const mission = gsiMissions.find(m => m.id === id);
             if (mission) {
@@ -659,7 +704,6 @@
             }
         }
 
-        // 9. Filtrer le tableau avec la barre de recherche
         function filterMissions() {
             const query = document.getElementById('searchMission').value.toLowerCase();
             const rows = document.querySelectorAll('#missionsTableBody tr');
@@ -670,7 +714,6 @@
             });
         }
 
-        // Helpers de style (Couleurs selon priorité et type)
         function getPriorityBadge(p) {
             return p === 1 ? 'bg-red-100 text-red-700' : p === 2 ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700';
         }
@@ -679,7 +722,5 @@
             return type === 'remote' ? 'border-blue-500' : type === 'onsite' ? 'border-green-500' : 'border-purple-500';
         }
     </script>
-</body>
-</html>
 </body>
 </html>
