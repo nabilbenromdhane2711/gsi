@@ -216,11 +216,10 @@
             </div>
             <form id="missionForm" onsubmit="handleSaveMission(event)" class="p-5 space-y-4 text-sm">
                 <div>
-    <label class="block text-xs font-semibold text-gray-600 mb-1">Collaborateur / Demandeur *</label>
-    <input type="text" id="collaboratorInput" list="usersList" required placeholder="Tapez ou sélectionnez un collaborateur..." class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
-    <!-- Liste d'autoplot alimentée dynamiquement par JS -->
-    <datalist id="usersList"></datalist>
-</div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Collaborateur / Demandeur *</label>
+                    <input type="text" id="collaboratorInput" list="usersList" required placeholder="Tapez ou sélectionnez un collaborateur..." class="w-full px-3 py-2 border border-gray-300 rounded bg-white">
+                    <datalist id="usersList"></datalist>
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Mode d'intervention</label>
@@ -388,7 +387,7 @@
 
         let dbEquipements = [];
         let dbUsers = [];
-       let gsiMissions = [];
+        let gsiMissions = [];
 
         const MISSION_TYPES = {
             support: { label: "Support/Assistance", details: ["Helpdesk", "Assistance", "Dépannage"] },
@@ -401,26 +400,45 @@
             equipment: { label: "Équipements", details: ["Fourniture", "Entrée/Sortie", "Installation"] }
         };
 
-        // --- GOOGLE SHEETS JSONP HANDLERS (Compatibilité GitHub CORS) ---
+        // --- GOOGLE SHEETS JSONP HANDLERS ---
         function chargerDonneesDepuisGoogleSheet() {
-    const callbackName = 'cb_load_' + Date.now();
-    window[callbackName] = function(data) {
-        if (data.equipements) dbEquipements = data.equipements;
-        if (data.users) dbUsers = data.users;
-        if (data.missions) gsiMissions = data.missions; // <--- Récupération des missions depuis Google Sheets
-        
-        renderEquipements();
-        renderUsers();
-        populateUsersDatalist();
-      
-        updateStats();
-        delete window[callbackName];
-    };
+            const callbackName = 'cb_load_' + Date.now();
+            window[callbackName] = function(data) {
+                if (data.equipements) dbEquipements = data.equipements;
+                if (data.users) dbUsers = data.users;
+                
+                // Normalisation du format des missions lues depuis Google Sheets
+                if (data.missions && Array.isArray(data.missions)) {
+                    gsiMissions = data.missions.map(item => {
+                        if (Array.isArray(item)) {
+                            return {
+                                id: item[0] || '',
+                                collaborator: item[1] || '',
+                                interventionType: item[2] || 'remote',
+                                priority: parseInt(item[3]) || 2,
+                                type: item[4] || '',
+                                detail: item[5] || '',
+                                notes: item[6] || '',
+                                status: item[7] || 'En cours',
+                                createdAt: item[8] || new Date().toISOString()
+                            };
+                        }
+                        return item;
+                    });
+                }
+                
+                renderEquipements();
+                renderUsers();
+                populateUsersDatalist();
+                renderMissions();
+                updateStats();
+                delete window[callbackName];
+            };
 
-    const script = document.createElement('script');
-    script.src = `${API_URL}?action=getAll&callback=${callbackName}`;
-    document.body.appendChild(script);
-}
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=getAll&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
 
         function envoyerDonneeVersGoogleSheet(targetSheet, arrayRow, onCompleteCallback) {
             const callbackName = 'cb_write_' + Date.now();
@@ -497,40 +515,27 @@
             });
         }
 
+        function populateUsersDatalist() {
+            const datalist = document.getElementById('usersList');
+            if (!datalist) return;
+            
+            datalist.innerHTML = '';
+            
+            dbUsers.forEach(u => {
+                const nom = u.nom || u[1] || '';
+                const prenom = u.prenom || u[2] || '';
+                const email = u.email || u[3] || '';
 
-function populateUsersDatalist() {
-    const datalist = document.getElementById('usersList');
-    if (!datalist) return;
-    
-    datalist.innerHTML = '';
-    
-    dbUsers.forEach(u => {
-        // Extraction des valeurs selon que u est un Tableau ou un Objet
-        const nom = u.nom || u[1] || '';
-        const prenom = u.prenom || u[2] || '';
-        const email = u.email || u[3] || '';
+                const fullName = `${nom} ${prenom}`.trim();
+                if (!email && !fullName) return;
 
-        const fullName = `${nom} ${prenom}`.trim();
-        
-        // Si aucune donnée n'est disponible, on passe l'élément
-        if (!email && !fullName) return;
-
-        const option = document.createElement('option');
-        // La valeur insérée automatiquement dans le champ d'entrée
-        option.value = email || fullName; 
-        
-        // Le libellé d'aide affiché dans la liste déroulante
-        option.label = `${fullName}${email ? ' (' + email + ')' : ''}`;
-        
-        datalist.appendChild(option);
-    });
-}
-
-
-
-
-
-
+                const option = document.createElement('option');
+                option.value = email || fullName; 
+                option.label = `${fullName}${email ? ' (' + email + ')' : ''}`;
+                
+                datalist.appendChild(option);
+            });
+        }
 
         function renderUsers() {
             const list = document.getElementById('listUsers');
@@ -662,34 +667,33 @@ function populateUsersDatalist() {
                 `).join('');
             }
         }
-function handleSaveMission(e) {
-    e.preventDefault();
-    
-    const nouvelleLigneMission = [
-        'MIS-' + Date.now(),
-        String(document.getElementById('collaboratorInput').value || '').trim(),
-        String(document.getElementById('interventionType').value || ''),
-        String(document.getElementById('prioritySelect').value || '2'),
-        String(document.getElementById('missionTypeSelect').value || ''),
-        String(document.getElementById('missionDetailSelect').value || ''),
-        String(document.getElementById('missionNotes').value || '').trim(),
-        'En cours',
-        new Date().toISOString()
-    ];
 
-    // Envoi vers l'onglet "Missions"
-    envoyerDonneeVersGoogleSheet('Missions', nouvelleLigneMission, function() {
-        closeMissionModal();
-        document.getElementById('missionForm').reset();
-        document.getElementById('missionDetailSelect').disabled = true;
-    });
-}
+        function handleSaveMission(e) {
+            e.preventDefault();
+            
+            const nouvelleLigneMission = [
+                'MIS-' + Date.now(),
+                String(document.getElementById('collaboratorInput').value || '').trim(),
+                String(document.getElementById('interventionType').value || ''),
+                String(document.getElementById('prioritySelect').value || '2'),
+                String(document.getElementById('missionTypeSelect').value || ''),
+                String(document.getElementById('missionDetailSelect').value || ''),
+                String(document.getElementById('missionNotes').value || '').trim(),
+                'En cours',
+                new Date().toISOString()
+            ];
+
+            envoyerDonneeVersGoogleSheet('Missions', nouvelleLigneMission, function() {
+                closeMissionModal();
+                document.getElementById('missionForm').reset();
+                document.getElementById('missionDetailSelect').disabled = true;
+            });
+        }
 
         function completeMission(id) {
             const mission = gsiMissions.find(m => m.id === id);
             if (mission) {
                 mission.status = 'Terminée';
-                localStorage.setItem('gsi_missions', JSON.stringify(gsiMissions));
                 renderMissions();
             }
         }
@@ -730,18 +734,8 @@ function handleSaveMission(e) {
 
         // --- INITIALISATION AUTOMATIQUE ---
         window.addEventListener('DOMContentLoaded', function() {
-            renderMissions();
             chargerDonneesDepuisGoogleSheet();
         });
-
-// --- INITIALISATION AUTOMATIQUE ---
-        window.addEventListener('DOMContentLoaded', function() {
-            renderMissions();
-            chargerDonneesDepuisGoogleSheet();
-        });
-
-
-        
     </script>
 </body>
 </html>
