@@ -61,32 +61,7 @@
             </div>
           </div>
 
-          <!-- Tableau des missions -->
-          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
-              <h3 class="text-base font-semibold text-gray-700">Toutes les missions actives</h3>
-              <input type="text" id="searchMission" onkeyup="filterMissions()" placeholder="🔍 Filtrer par collaborateur..." class="border border-gray-300 rounded-md px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm text-gray-600">
-                <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-                  <tr>
-                    <th class="p-3">Collaborateur</th>
-                    <th class="p-3">Type</th>
-                    <th class="p-3">Détail</th>
-                    <th class="p-3">Priorité</th>
-                    <th class="p-3">Mode</th>
-                    <th class="p-3">Statut</th>
-                    <th class="p-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="missionsTableBody">
-                  <!-- Lignes générées via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+         
         </section>
 
         <!-- MODULES ÉQUIPEMENTS ET UTILISATEURS -->
@@ -618,19 +593,17 @@
             detailSelect.disabled = false;
         }
 
-        function renderMissions() {
+       function renderMissions() {
             const topGrid = document.getElementById('topMissionsGrid');
-            const tableBody = document.getElementById('missionsTableBody');
             
             const activeMissions = gsiMissions.filter(m => m.status !== 'Terminée');
             activeMissions.sort((a, b) => a.priority - b.priority || new Date(b.createdAt) - new Date(a.createdAt));
 
-            const top5 = activeMissions.slice(0, 5);
-
-            if (top5.length === 0) {
-                topGrid.innerHTML = '<div class="col-span-full p-4 text-center text-sm text-gray-500 bg-slate-50 border border-dashed border-gray-300 rounded-lg">Aucune mission prioritaire en cours. Cliquez sur "+ Nouvelle Mission" pour en ajouter une.</div>';
+            // Afficher uniquement dans la grille de cartes
+            if (activeMissions.length === 0) {
+                topGrid.innerHTML = '<div class="col-span-full p-4 text-center text-sm text-gray-500 bg-slate-50 border border-dashed border-gray-300 rounded-lg">Aucune mission en cours. Cliquez sur "+ Nouvelle Mission" pour en ajouter une.</div>';
             } else {
-                topGrid.innerHTML = top5.map(m => `
+                topGrid.innerHTML = activeMissions.map(m => `
                     <div class="bg-white p-4 rounded-lg border-t-4 ${getInterventionColor(m.interventionType)} shadow-sm flex flex-col justify-between h-44 border-x border-b border-gray-200">
                         <div>
                             <div class="flex justify-between items-start">
@@ -647,26 +620,7 @@
                     </div>
                 `).join('');
             }
-
-            if (activeMissions.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500 text-sm">Aucune mission dans la liste.</td></tr>';
-            } else {
-                tableBody.innerHTML = activeMissions.map(m => `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 font-semibold text-gray-800">${m.collaborator}</td>
-                        <td class="p-3">${MISSION_TYPES[m.type]?.label || m.type}</td>
-                        <td class="p-3 italic">${m.detail}</td>
-                        <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${getPriorityBadge(m.priority)}">P${m.priority}</span></td>
-                        <td class="p-3 text-xs uppercase">${m.interventionType}</td>
-                        <td class="p-3"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-medium">${m.status}</span></td>
-                        <td class="p-3 text-right">
-                            <button onclick="completeMission('${m.id}')" class="text-green-600 hover:text-green-800 font-medium text-xs cursor-pointer">Clôturer</button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
         }
-
         function handleSaveMission(e) {
             if (e) e.preventDefault();
 
@@ -706,14 +660,7 @@
             }
         }
 
-        function filterMissions() {
-            const query = document.getElementById('searchMission').value.toLowerCase();
-            const rows = document.querySelectorAll('#missionsTableBody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
+        
 
         function getPriorityBadge(p) {
             return p === 1 ? 'bg-red-100 text-red-700' : p === 2 ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700';
