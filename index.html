@@ -592,35 +592,52 @@
             });
             detailSelect.disabled = false;
         }
+function renderMissions() {
+    const grid = document.getElementById('topMissionsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
 
-       function renderMissions() {
-            const topGrid = document.getElementById('topMissionsGrid');
-            
-            const activeMissions = gsiMissions.filter(m => m.status !== 'Terminée');
-            activeMissions.sort((a, b) => a.priority - b.priority || new Date(b.createdAt) - new Date(a.createdAt));
+    // Ne filtrer que les missions 'En cours'
+    const missionsEnCours = gsiMissions.filter(m => m.status === 'En cours' || m.status === 'Encours');
 
-            // Afficher uniquement dans la grille de cartes
-            if (activeMissions.length === 0) {
-                topGrid.innerHTML = '<div class="col-span-full p-4 text-center text-sm text-gray-500 bg-slate-50 border border-dashed border-gray-300 rounded-lg">Aucune mission en cours. Cliquez sur "+ Nouvelle Mission" pour en ajouter une.</div>';
-            } else {
-                topGrid.innerHTML = activeMissions.map(m => `
-                    <div class="bg-white p-4 rounded-lg border-t-4 ${getInterventionColor(m.interventionType)} shadow-sm flex flex-col justify-between h-44 border-x border-b border-gray-200">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-bold text-gray-800 text-sm truncate">${m.collaborator}</span>
-                                <span class="text-xs px-2 py-0.5 rounded font-bold ${getPriorityBadge(m.priority)}">P${m.priority}</span>
-                            </div>
-                            <div class="text-xs text-indigo-600 font-medium mt-1">${MISSION_TYPES[m.type]?.label || m.type}</div>
-                            <div class="text-xs text-gray-500 italic mt-0.5">${m.detail}</div>
-                            <p class="text-xs text-gray-600 mt-2 line-clamp-2">${m.notes || ''}</p>
-                        </div>
-                        <button onclick="completeMission('${m.id}')" class="w-full mt-2 bg-green-50 hover:bg-green-100 text-green-700 text-xs py-1 rounded font-medium border border-green-200 cursor-pointer transition">
-                            ✓ Terminer
-                        </button>
-                    </div>
-                `).join('');
-            }
-        }
+    // Prendre les 5 plus prioritaires
+    const top5 = missionsEnCours.sort((a, b) => a.priority - b.priority).slice(0, 5);
+
+    top5.forEach(mission => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-50 border border-gray-200 p-4 rounded-lg shadow-sm flex flex-col justify-between";
+        card.innerHTML = `
+            <div>
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">P${mission.priority}</span>
+                    <span class="text-xs text-gray-500">${mission.interventionType}</span>
+                </div>
+                <h4 class="font-bold text-slate-800 text-sm mb-1">${mission.collaborator}</h4>
+                <p class="text-xs text-gray-600 mb-1"><strong>${mission.type}</strong> : ${mission.detail}</p>
+                <p class="text-xs text-gray-500 italic mb-3">${mission.notes || ''}</p>
+            </div>
+            <button onclick="terminerMission('${mission.id}')" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-1.5 rounded transition cursor-pointer">
+                ✓ Terminer
+            </button>
+        `;
+        grid.appendChild(card);
+    });
+}
+        function terminerMission(missionId) {
+    if (!confirm("Voulez-vous vraiment passer cette mission en 'Archivé' ?")) return;
+
+    const callbackName = 'cb_update_' + Date.now();
+    window[callbackName] = function(response) {
+        delete window[callbackName];
+        // Recharger les données fraîches depuis le Google Sheet
+        chargerDonneesDepuisGoogleSheet();
+    };
+
+    const script = document.createElement('script');
+    // Envoie l'action 'updateMissionStatus' avec l'ID et le nouveau statut
+    script.src = `${API_URL}?action=updateMissionStatus&id=${encodeURIComponent(missionId)}&status=Archivé&callback=${callbackName}`;
+    document.body.appendChild(script);
+}
         function handleSaveMission(e) {
             if (e) e.preventDefault();
 
